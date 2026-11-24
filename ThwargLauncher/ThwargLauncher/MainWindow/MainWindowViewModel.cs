@@ -59,6 +59,45 @@ namespace ThwargLauncher
                 }
             }
         }
+        public IList<string> ReenableOptions { get; } = new List<string> { "Disabled", "15m", "30m", "1h", "4h" };
+        public string AutoRelaunchReenable
+        {
+            get { return GetAutoRelaunchReenable(); }
+            set
+            {
+                if (value == null) { return; }
+                if (GetAutoRelaunchReenable() != value)
+                {
+                    Properties.Settings.Default.AutoRelaunchReenable = value;
+                    Properties.Settings.Default.Save();
+                    OnPropertyChanged("AutoRelaunchReenable");
+                }
+            }
+        }
+        private string GetAutoRelaunchReenable()
+        {
+            try
+            {
+                string value = Properties.Settings.Default.AutoRelaunchReenable;
+                return ReenableOptions.Contains(value) ? value : "Disabled";
+            }
+            catch
+            {
+                return "Disabled";
+            }
+        }
+        /// <summary>Delay after which Auto Relaunch is turned back on, or null if disabled.</summary>
+        public TimeSpan? GetReenableDelay()
+        {
+            switch (GetAutoRelaunchReenable())
+            {
+                case "15m": return TimeSpan.FromMinutes(15);
+                case "30m": return TimeSpan.FromMinutes(30);
+                case "1h": return TimeSpan.FromHours(1);
+                case "4h": return TimeSpan.FromHours(4);
+                default: return null;
+            }
+        }
         public bool NeverKillClients
         {
             get { return GetNeverKillClients(); }

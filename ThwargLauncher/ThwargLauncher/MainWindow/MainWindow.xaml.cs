@@ -86,6 +86,7 @@ namespace ThwargLauncher
             _timer = new System.Timers.Timer(5000); // every five seconds
             _timer.Elapsed += _timer_Elapsed;
             StartStopTimerIfAutoChecked();
+            UpdateReenableDeadline();
 
             if(_autoLaunchOnStart)
             {
@@ -117,6 +118,43 @@ namespace ThwargLauncher
             catch
             {
                 return false;
+            }
+        }
+
+        // Re-enable Auto Relaunch automatically some time after it was turned off
+        private System.Windows.Threading.DispatcherTimer _reenableTimer;
+        private DateTime? _reenableAtUtc;
+
+        private void UpdateReenableDeadline()
+        {
+            TimeSpan? delay = _viewModel.GetReenableDelay();
+            if (TryGetAutoRelaunch() || !delay.HasValue)
+            {
+                _reenableAtUtc = null;
+                if (_reenableTimer != null) { _reenableTimer.Stop(); }
+                return;
+            }
+            _reenableAtUtc = DateTime.UtcNow + delay.Value;
+            if (_reenableTimer == null)
+            {
+                _reenableTimer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
+                _reenableTimer.Tick += _reenableTimer_Tick;
+            }
+            _reenableTimer.Start();
+        }
+
+        private void _reenableTimer_Tick(object sender, EventArgs e)
+        {
+            if (!_reenableAtUtc.HasValue || TryGetAutoRelaunch())
+            {
+                _reenableTimer.Stop();
+                return;
+            }
+            if (DateTime.UtcNow >= _reenableAtUtc.Value)
+            {
+                _reenableTimer.Stop();
+                _reenableAtUtc = null;
+                _viewModel.AutoRelaunch = true;
             }
         }
 
@@ -256,6 +294,11 @@ namespace ThwargLauncher
             if (e.PropertyName == "AutoRelaunch")
             {
                 StartStopTimerIfAutoChecked();
+                UpdateReenableDeadline();
+            }
+            if (e.PropertyName == "AutoRelaunchReenable")
+            {
+                UpdateReenableDeadline();
             }
             // Do not need to do anything if NeverKillClients is changed
         }

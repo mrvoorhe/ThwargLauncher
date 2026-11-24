@@ -44,6 +44,9 @@
     <Setting Name="AutoRelaunch" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="AutoRelaunchReenable" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Disabled</Value>
+    </Setting>
     <Setting Name="CheckServerStatus" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>

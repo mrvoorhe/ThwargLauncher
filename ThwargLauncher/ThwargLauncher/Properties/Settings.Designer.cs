@@ -184,6 +184,18 @@ namespace ThwargLauncher.Properties {
                 this["AutoRelaunch"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Disabled")]
+        public string AutoRelaunchReenable {
+            get {
+                return ((string)(this["AutoRelaunchReenable"]));
+            }
+            set {
+                this["AutoRelaunchReenable"] = value;
+            }
+        }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
